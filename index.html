@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gradient Overlay Studio v4</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+    }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    /* Sidebar Controls */
+    .controls {
+      width: 320px;
+      background-color: var(--card-bg);
+      padding: 24px;
+      box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      z-index: 10;
+      overflow-y: auto;
+    }
+    h2 { margin-top: 0; font-size: 1.5rem; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+    .control-group { display: flex; flex-direction: column; gap: 6px; }
+    label { font-size: 0.8rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); display: flex; justify-content: space-between; }
+    input[type="file"] { background: var(--border); padding: 8px; border-radius: 6px; color: var(--text); font-size: 0.8rem; cursor: pointer; border: 1px solid transparent; }
+    input[type="file"]:hover { border-color: var(--accent); }
+    input[type="color"] { border: none; width: 100%; height: 36px; border-radius: 6px; cursor: pointer; background: transparent; padding: 0; }
+    input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+    select { background: var(--border); color: var(--text); padding: 10px; border-radius: 6px; border: 1px solid transparent; font-size: 0.9rem; cursor: pointer; outline: none; }
+    select:hover { border-color: var(--accent); }
+    
+    /* Side Combiner Checkboxes */
+    .side-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: #33415540;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text);
+      text-transform: none;
+      font-weight: normal;
+    }
+    .checkbox-label input {
+      accent-color: var(--accent);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    button {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 8px;
+    }
+    button:hover { background-color: var(--accent-hover); }
+    button:active { transform: translateY(1px); }
+    button#resetBtn { background-color: var(--border); color: var(--text-muted); margin-top: 0; }
+    button#resetBtn:hover { background-color: #475569; color: var(--text); }
+
+    /* Custom Position UI */
+    .position-controls { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 4px; }
+    .pos-input-group { display: flex; align-items: center; background: #33415560; border-radius: 4px; padding: 4px 8px; border: 1px solid var(--border); }
+    .pos-input-group span { color: var(--text-muted); font-weight: bold; margin-right: 6px; }
+    .pos-input-group input { background: transparent; border: none; color: var(--text); width: 100%; font-size: 0.9rem; padding: 2px; text-align: right; }
+    .pos-input-group input:focus { outline: none; color: var(--accent); }
+    .pos-input-group small { color: var(--text-muted); margin-left: 2px; }
+
+    /* Workspace Area */
+    .workspace {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      background-image: radial-gradient(#334155 1px, transparent 1px);
+      background-size: 20px 20px;
+      position: relative;
+    }
+    .canvas-container {
+      max-width: 100%;
+      max-height: 100%;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #1e293b60;
+    }
+    canvas { display: block; max-width: 100%; max-height: 85vh; object-fit: contain; cursor: crosshair; }
+  </style>
+</head>
+<body>
+
+  <!-- Controls Panel -->
+  <div class="controls">
+    <h2>Editor Panel</h2>
+    
+    <div class="control-group">
+      <label>1. Background Image</label>
+      <input type="file" id="bgInput" accept="image/*">
+    </div>
+
+    <div class="control-group">
+      <label>2. Gradient Style</label>
+      <select id="stylePicker">
+        <option value="dotted">Dotted Classic (Halftone)</option>
+        <option value="solid">Solid Smooth Gradient</option>
+        <option value="striped">Striped Linework</option>
+      </select>
+    </div>
+
+    <div class="control-group">
+      <label>3. Gradient Sides (Combine)</label>
+      <div class="side-selector">
+        <label class="checkbox-label"><input type="checkbox" id="sideLeft" checked> Left</label>
+        <label class="checkbox-label"><input type="checkbox" id="sideRight"> Right</label>
+        <label class="checkbox-label"><input type="checkbox" id="sideTop"> Top</label>
+        <label class="checkbox-label"><input type="checkbox" id="sideBottom"> Bottom</label>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>4. Gradient Color</label>
+      <input type="color" id="colorPicker" value="#004fc4">
+    </div>
+
+    <div class="control-group">
+      <label>5. Gradient Length<span id="widthVal">35%</span></label>
+      <input type="range" id="widthSlider" min="5" max="100" value="35">
+    </div>
+
+    <div class="control-group" style="margin-top: 10px; border-top: 1px solid var(--border); padding-top: 16px;">
+      <label>6. Upload Logo</label>
+      <input type="file" id="logoInput" accept="image/*">
+    </div>
+    
+    <div class="control-group">
+      <label>7. Logo Size<span id="logoSizeVal">150px</span></label>
+      <input type="range" id="logoSizeSlider" min="10" max="2000" value="150" step="10">
+    </div>
+
+    <div class="control-group">
+      <label>8. Logo Position (X, Y)</label>
+      <div class="position-controls">
+        <div class="pos-input-group">
+          <span>X</span>
+          <input type="number" id="logoX" value="40">
+          <small>px</small>
+        </div>
+        <div class="pos-input-group">
+          <span>Y</span>
+          <input type="number" id="logoY" value="40">
+          <small>px</small>
+        </div>
+      </div>
+      <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">Or **click/drag** the canvas to position</small>
+    </div>
+
+    <button id="resetBtn">Reset Logo Position</button>
+    <button id="downloadBtn" style="margin-top: auto;">Download Image</button>
+  </div>
+
+  <!-- Real-time Preview Area -->
+  <div class="workspace">
+    <div class="canvas-container">
+      <canvas id="editorCanvas"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('editorCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Controls
+    const bgInput = document.getElementById('bgInput');
+    const stylePicker = document.getElementById('stylePicker');
+    const colorPicker = document.getElementById('colorPicker');
+    const widthSlider = document.getElementById('widthSlider');
+    const widthValDisplay = document.getElementById('widthVal');
+    const logoInput = document.getElementById('logoInput');
+    const logoSizeSlider = document.getElementById('logoSizeSlider');
+    const logoSizeValDisplay = document.getElementById('logoSizeVal');
+    const logoXInput = document.getElementById('logoX');
+    const logoYInput = document.getElementById('logoY');
+    const resetBtn = document.getElementById('resetBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    // Side Checkboxes
+    const sideLeft = document.getElementById('sideLeft');
+    const sideRight = document.getElementById('sideRight');
+    const sideTop = document.getElementById('sideTop');
+    const sideBottom = document.getElementById('sideBottom');
+
+    // State Variables
+    let bgImage = null;
+    let logoImage = null;
+    let isDragging = false;
+    let dragStartX, dragStartY;
+    const DEFAULT_LOGO_POS = 40;
+
+    // Load Default Canvas
+    function initCanvas() {
+      canvas.width = 1280;
+      canvas.height = 720;
+      draw();
+    }
+
+    // Convert hex color to RGBA string
+    function hexToRgbStr(hex) {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `${r}, ${g}, ${b}`;
+    }
+
+    // Draw individual side gradient
+    function drawSideGradient(side, style, color, rgb, pct) {
+      const gWidth = canvas.width * pct;
+      const gHeight = canvas.height * pct;
+      const dotSpacing = 16;
+      const lineWidth = 8;
+
+      if (style === 'dotted') {
+        // Define bounding boxes to keep loops fast and performant
+        let startX = 0, endX = canvas.width, startY = 0, endY = canvas.height;
+        if (side === 'left') endX = gWidth;
+        if (side === 'right') startX = canvas.width - gWidth;
+        if (side === 'top') endY = gHeight;
+        if (side === 'bottom') startY = canvas.height - gHeight;
+
+        for (let x = startX; x < endX; x += dotSpacing) {
+          for (let y = startY; y < endY; y += dotSpacing) {
+            let ratio = 0;
+            if (side === 'left') ratio = 1 - (x / gWidth);
+            if (side === 'right') ratio = 1 - ((canvas.width - x) / gWidth);
+            if (side === 'top') ratio = 1 - (y / gHeight);
+            if (side === 'bottom') ratio = 1 - ((canvas.height - y) / gHeight);
+
+            if (ratio > 0) {
+              const radius = (dotSpacing / 2) * Math.pow(ratio, 1.2) * 1.3;
+              ctx.fillStyle = color;
+              ctx.beginPath();
+              ctx.arc(x + dotSpacing/2, y + dotSpacing/2, Math.max(0, radius), 0, Math.PI * 2);
+              ctx.fill();
+            }
+          }
+        }
+      } 
+      
+      else if (style === 'solid') {
+        let grad;
+        if (side === 'left') {
+          grad = ctx.createLinearGradient(0, 0, gWidth, 0);
+          grad.addColorStop(0, `rgba(${rgb}, 1)`);
+          grad.addColorStop(1, `rgba(${rgb}, 0)`);
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, gWidth, canvas.height);
+        }
+        else if (side === 'right') {
+          grad = ctx.createLinearGradient(canvas.width, 0, canvas.width - gWidth, 0);
+          grad.addColorStop(0, `rgba(${rgb}, 1)`);
+          grad.addColorStop(1, `rgba(${rgb}, 0)`);
+          ctx.fillStyle = grad;
+          ctx.fillRect(canvas.width - gWidth, 0, gWidth, canvas.height);
+        }
+        else if (side === 'top') {
+          grad = ctx.createLinearGradient(0, 0, 0, gHeight);
+          grad.addColorStop(0, `rgba(${rgb}, 1)`);
+          grad.addColorStop(1, `rgba(${rgb}, 0)`);
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, canvas.width, gHeight);
+        }
+        else if (side === 'bottom') {
+          grad = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - gHeight);
+          grad.addColorStop(0, `rgba(${rgb}, 1)`);
+          grad.addColorStop(1, `rgba(${rgb}, 0)`);
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, canvas.height - gHeight, canvas.width, gHeight);
+        }
+      } 
+      
+      else if (style === 'striped') {
+        if (side === 'left') {
+          for (let x = 0; x < gWidth; x += lineWidth * 2) {
+            const ratio = 1 - (x / gWidth);
+            ctx.fillStyle = `rgba(${rgb}, ${ratio})`;
+            ctx.fillRect(x, 0, lineWidth, canvas.height);
+          }
+        }
+        else if (side === 'right') {
+          for (let x = canvas.width; x > canvas.width - gWidth; x -= lineWidth * 2) {
+            const ratio = 1 - ((canvas.width - x) / gWidth);
+            ctx.fillStyle = `rgba(${rgb}, ${ratio})`;
+            ctx.fillRect(x - lineWidth, 0, lineWidth, canvas.height);
+          }
+        }
+        else if (side === 'top') {
+          for (let y = 0; y < gHeight; y += lineWidth * 2) {
+            const ratio = 1 - (y / gHeight);
+            ctx.fillStyle = `rgba(${rgb}, ${ratio})`;
+            ctx.fillRect(0, y, canvas.width, lineWidth);
+          }
+        }
+        else if (side === 'bottom') {
+          for (let y = canvas.height; y > canvas.height - gHeight; y -= lineWidth * 2) {
+            const ratio = 1 - ((canvas.height - y) / gHeight);
+            ctx.fillStyle = `rgba(${rgb}, ${ratio})`;
+            ctx.fillRect(0, y - lineWidth, canvas.width, lineWidth);
+          }
+        }
+      }
+    }
+
+    // Main Draw Function
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // 1. Draw Background
+      if (bgImage) {
+        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#64748b';
+        ctx.font = 'bold 28px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText('Upload a background image to begin', canvas.width / 2, canvas.height / 2);
+      }
+
+      // 2. Draw Active Gradients
+      const color = colorPicker.value;
+      const rgb = hexToRgbStr(color);
+      const pct = parseInt(widthSlider.value) / 100;
+      const style = stylePicker.value;
+
+      if (sideLeft.checked) drawSideGradient('left', style, color, rgb, pct);
+      if (sideRight.checked) drawSideGradient('right', style, color, rgb, pct);
+      if (sideTop.checked) drawSideGradient('top', style, color, rgb, pct);
+      if (sideBottom.checked) drawSideGradient('bottom', style, color, rgb, pct);
+
+      // 3. Draw Logo
+      if (logoImage) {
+        const logoSize = parseInt(logoSizeSlider.value);
+        const aspectRatio = logoImage.height / logoImage.width;
+        const drawWidth = logoSize;
+        const drawHeight = logoSize * aspectRatio;
+
+        const xPos = parseInt(logoXInput.value); 
+        const yPos = parseInt(logoYInput.value);
+
+        if (isDragging) {
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(xPos, yPos, drawWidth, drawHeight);
+        }
+
+        ctx.drawImage(logoImage, xPos, yPos, drawWidth, drawHeight);
+      }
+    }
+
+    function getMousePos(canvas, evt) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        return {
+            x: (evt.clientX - rect.left) * scaleX,
+            y: (evt.clientY - rect.top) * scaleY
+        };
+    }
+
+    // Interaction Handlers
+    canvas.addEventListener('mousedown', (e) => {
+        if (!logoImage) return;
+        isDragging = true;
+        const mousePos = getMousePos(canvas, e);
+        dragStartX = mousePos.x - parseInt(logoXInput.value);
+        dragStartY = mousePos.y - parseInt(logoYInput.value);
+        canvas.style.cursor = 'grabbing';
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+        if (!isDragging || !logoImage) return;
+        const mousePos = getMousePos(canvas, e);
+        logoXInput.value = Math.round(mousePos.x - dragStartX);
+        logoYInput.value = Math.round(mousePos.y - dragStartY);
+        draw();
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            canvas.style.cursor = 'crosshair';
+            draw(); 
+        }
+    });
+
+    canvas.addEventListener('click', (e) => {
+        if(!logoImage || isDragging) return; 
+        const mousePos = getMousePos(canvas, e);
+        logoXInput.value = Math.round(mousePos.x);
+        logoYInput.value = Math.round(mousePos.y);
+        draw();
+    });
+
+    bgInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          bgImage = new Image();
+          bgImage.onload = () => {
+            canvas.width = bgImage.naturalWidth;
+            canvas.height = bgImage.naturalHeight;
+            logoSizeSlider.max = Math.max(canvas.width, canvas.height);
+            draw();
+          };
+          bgImage.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    logoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          logoImage = new Image();
+          logoImage.onload = draw;
+          logoImage.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Real-time Event Listeners
+    stylePicker.addEventListener('change', draw);
+    colorPicker.addEventListener('input', draw);
+    widthSlider.addEventListener('input', (e) => {
+      widthValDisplay.textContent = `${e.target.value}%`;
+      draw();
+    });
+    logoSizeSlider.addEventListener('input', (e) => {
+      logoSizeValDisplay.textContent = `${e.target.value}px`;
+      draw();
+    });
+    logoXInput.addEventListener('input', draw);
+    logoYInput.addEventListener('input', draw);
+
+    // Side Selection Listeners
+    sideLeft.addEventListener('change', draw);
+    sideRight.addEventListener('change', draw);
+    sideTop.addEventListener('change', draw);
+    sideBottom.addEventListener('change', draw);
+
+    resetBtn.addEventListener('click', () => {
+        logoXInput.value = DEFAULT_LOGO_POS;
+        logoYInput.value = DEFAULT_LOGO_POS;
+        draw();
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      if (!bgImage) {
+        alert("Please upload a background image first!");
+        return;
+      }
+      const link = document.createElement('a');
+      link.download = 'gradient-overlay-studio.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+
+    initCanvas();
+  </script>
+</body>
+</html>
