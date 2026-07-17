@@ -6,16 +6,16 @@
   <title>Gradient Overlay Studio v4</title>
   <link rel="icon" type="image/png" href="logo.png">
   <!-- Discord & Social Media Embeds (Open Graph) -->
-<meta property="og:title" content="Gradient Overlay Studio" />
-<meta property="og:description" content="A simple, free tool to add gorgeous halftone, solid, and striped gradient frames and logos to your images." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://mr-tomato-av.github.io/Gradient-studio/" />
+  <meta property="og:title" content="Gradient Overlay Studio" />
+  <meta property="og:description" content="A simple, free tool to add gorgeous halftone, solid, and striped gradient frames and logos to your images." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://mr-tomato-av.github.io/Gradient-studio/" />
 
-<!-- The preview image that shows up in the embed (use a link to your favicon, logo, or a screenshot) -->
-<meta property="og:image" content="logo.png" />
+  <!-- The preview image that shows up in the embed -->
+  <meta property="og:image" content="logo.png" />
 
-<!-- This changes the color of the vertical bar on the left side of the Discord embed -->
-<meta name="theme-color" content="#3b82f6" />
+  <!-- This changes the color of the vertical bar on the left side of the Discord embed -->
+  <meta name="theme-color" content="#3b82f6" />
   <style>
     :root {
       --bg-color: #0f172a;
@@ -57,15 +57,31 @@
     select { background: var(--border); color: var(--text); padding: 10px; border-radius: 6px; border: 1px solid transparent; font-size: 0.9rem; cursor: pointer; outline: none; }
     select:hover { border-color: var(--accent); }
     
-    /* Side Combiner Checkboxes */
-    .side-selector {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+    /* Side Manager Configs */
+    .side-manager {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
       background: #33415540;
-      padding: 8px;
+      padding: 12px;
       border-radius: 6px;
       border: 1px solid var(--border);
+    }
+    .side-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-bottom: 1px solid #33415560;
+      padding-bottom: 12px;
+    }
+    .side-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .side-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .checkbox-label {
       display: flex;
@@ -74,14 +90,29 @@
       cursor: pointer;
       font-size: 0.85rem;
       color: var(--text);
-      text-transform: none;
-      font-weight: normal;
+      font-weight: bold;
     }
     .checkbox-label input {
       accent-color: var(--accent);
       width: 16px;
       height: 16px;
       cursor: pointer;
+    }
+    .range-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .range-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .range-row input[type="range"] {
+      width: 55%;
     }
 
     button {
@@ -151,37 +182,75 @@
     </div>
 
     <div class="control-group">
-      <label>3. Gradient Sides (Combine)</label>
-      <div class="side-selector">
-        <label class="checkbox-label"><input type="checkbox" id="sideLeft" checked> Left</label>
-        <label class="checkbox-label"><input type="checkbox" id="sideRight"> Right</label>
-        <label class="checkbox-label"><input type="checkbox" id="sideTop"> Top</label>
-        <label class="checkbox-label"><input type="checkbox" id="sideBottom"> Bottom</label>
-      </div>
-    </div>
-
-    <div class="control-group">
-      <label>4. Gradient Color</label>
+      <label>3. Gradient Color</label>
       <input type="color" id="colorPicker" value="#004fc4">
     </div>
 
     <div class="control-group">
-      <label>5. Gradient Length<span id="widthVal">35%</span></label>
-      <input type="range" id="widthSlider" min="5" max="100" value="35">
+      <label>4. Active Sides &amp; Custom Alignment</label>
+      <div class="side-manager">
+        <!-- Left Side Row -->
+        <div class="side-row">
+          <div class="side-header">
+            <label class="checkbox-label"><input type="checkbox" id="sideLeft" checked> Left Side</label>
+          </div>
+          <div class="range-inputs">
+            <div class="range-row"><span>Size:</span><input type="range" id="thickLeft" min="5" max="100" value="35"><span id="thickLeftVal">35%</span></div>
+            <div class="range-row"><span>Start Y:</span><input type="range" id="startLeft" min="0" max="100" value="0"><span id="startLeftVal">0%</span></div>
+            <div class="range-row"><span>End Y:</span><input type="range" id="endLeft" min="0" max="100" value="100"><span id="endLeftVal">100%</span></div>
+          </div>
+        </div>
+        
+        <!-- Right Side Row -->
+        <div class="side-row">
+          <div class="side-header">
+            <label class="checkbox-label"><input type="checkbox" id="sideRight"> Right Side</label>
+          </div>
+          <div class="range-inputs">
+            <div class="range-row"><span>Size:</span><input type="range" id="thickRight" min="5" max="100" value="35"><span id="thickRightVal">35%</span></div>
+            <div class="range-row"><span>Start Y:</span><input type="range" id="startRight" min="0" max="100" value="0"><span id="startRightVal">0%</span></div>
+            <div class="range-row"><span>End Y:</span><input type="range" id="endRight" min="0" max="100" value="100"><span id="endRightVal">100%</span></div>
+          </div>
+        </div>
+
+        <!-- Top Side Row -->
+        <div class="side-row">
+          <div class="side-header">
+            <label class="checkbox-label"><input type="checkbox" id="sideTop"> Top Side</label>
+          </div>
+          <div class="range-inputs">
+            <div class="range-row"><span>Size:</span><input type="range" id="thickTop" min="5" max="100" value="35"><span id="thickTopVal">35%</span></div>
+            <div class="range-row"><span>Start X:</span><input type="range" id="startX" min="0" max="100" value="0"><span id="startXVal">0%</span></div>
+            <div class="range-row"><span>End X:</span><input type="range" id="endX" min="0" max="100" value="100"><span id="endXVal">100%</span></div>
+          </div>
+        </div>
+
+        <!-- Bottom Side Row -->
+        <div class="side-row">
+          <div class="side-header">
+            <label class="checkbox-label"><input type="checkbox" id="sideBottom"> Bottom Side</label>
+          </div>
+          <div class="range-inputs">
+            <div class="range-row"><span>Size:</span><input type="range" id="thickBottom" min="5" max="100" value="35"><span id="thickBottomVal">35%</span></div>
+            <div class="range-row"><span>Start X:</span><input type="range" id="startXBot" min="0" max="100" value="0"><span id="startXBotVal">0%</span></div>
+            <div class="range-row"><span>End X:</span><input type="range" id="endXBot" min="0" max="100" value="100"><span id="endXBotVal">100%</span></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="control-group" style="margin-top: 10px; border-top: 1px solid var(--border); padding-top: 16px;">
-      <label>6. Upload Logo</label>
+      <label>5. Upload Logo</label>
       <input type="file" id="logoInput" accept="image/*">
     </div>
     
     <div class="control-group">
-      <label>7. Logo Size<span id="logoSizeVal">150px</span></label>
+      <label>6. Logo Size<span id="logoSizeVal">150px</span></label>
       <input type="range" id="logoSizeSlider" min="10" max="2000" value="150" step="10">
     </div>
 
     <div class="control-group">
-      <label>8. Logo Position (X, Y)</label>
+      <label>7. Logo Position (X, Y)</label>
       <div class="position-controls">
         <div class="pos-input-group">
           <span>X</span>
@@ -216,8 +285,6 @@
     const bgInput = document.getElementById('bgInput');
     const stylePicker = document.getElementById('stylePicker');
     const colorPicker = document.getElementById('colorPicker');
-    const widthSlider = document.getElementById('widthSlider');
-    const widthValDisplay = document.getElementById('widthVal');
     const logoInput = document.getElementById('logoInput');
     const logoSizeSlider = document.getElementById('logoSizeSlider');
     const logoSizeValDisplay = document.getElementById('logoSizeVal');
@@ -226,27 +293,46 @@
     const resetBtn = document.getElementById('resetBtn');
     const downloadBtn = document.getElementById('downloadBtn');
 
-    // Side Checkboxes
-    const sideLeft = document.getElementById('sideLeft');
-    const sideRight = document.getElementById('sideRight');
-    const sideTop = document.getElementById('sideTop');
-    const sideBottom = document.getElementById('sideBottom');
+    // Dynamic Multi-Range State Mapper per Border Block
+    const sides = {
+      left: {
+        cb: document.getElementById('sideLeft'),
+        thick: document.getElementById('thickLeft'), thickVal: document.getElementById('thickLeftVal'),
+        start: document.getElementById('startLeft'), startVal: document.getElementById('startLeftVal'),
+        end: document.getElementById('endLeft'), endVal: document.getElementById('endLeftVal')
+      },
+      right: {
+        cb: document.getElementById('sideRight'),
+        thick: document.getElementById('thickRight'), thickVal: document.getElementById('thickRightVal'),
+        start: document.getElementById('startRight'), startVal: document.getElementById('startRightVal'),
+        end: document.getElementById('endRight'), endVal: document.getElementById('endRightVal')
+      },
+      top: {
+        cb: document.getElementById('sideTop'),
+        thick: document.getElementById('thickTop'), thickVal: document.getElementById('thickTopVal'),
+        start: document.getElementById('startX'), startVal: document.getElementById('startXVal'),
+        end: document.getElementById('endX'), endVal: document.getElementById('endXVal')
+      },
+      bottom: {
+        cb: document.getElementById('sideBottom'),
+        thick: document.getElementById('thickBottom'), thickVal: document.getElementById('thickBottomVal'),
+        start: document.getElementById('startXBot'), startVal: document.getElementById('startXBotVal'),
+        end: document.getElementById('endXBot'), endVal: document.getElementById('endXBotVal')
+      }
+    };
 
-    // State Variables
     let bgImage = null;
     let logoImage = null;
     let isDragging = false;
     let dragStartX, dragStartY;
     const DEFAULT_LOGO_POS = 40;
 
-    // Load Default Canvas
     function initCanvas() {
       canvas.width = 1280;
       canvas.height = 720;
       draw();
     }
 
-    // Convert hex color to RGBA string
     function hexToRgbStr(hex) {
       const r = parseInt(hex.slice(1, 3), 16);
       const g = parseInt(hex.slice(3, 5), 16);
@@ -254,35 +340,44 @@
       return `${r}, ${g}, ${b}`;
     }
 
-    // Draw individual side gradient
-    function drawSideGradient(side, style, color, rgb, pct) {
-      const gWidth = canvas.width * pct;
-      const gHeight = canvas.height * pct;
+    function drawSideGradient(side, style, color, rgb, thickPct, startPct, endPct) {
+      const gWidth = canvas.width * thickPct;
+      const gHeight = canvas.height * thickPct;
       const dotSpacing = 16;
       const lineWidth = 8;
 
+      let minX = 0, maxX = canvas.width, minY = 0, maxY = canvas.height;
+      if (side === 'left' || side === 'right') {
+        minY = canvas.height * startPct;
+        maxY = canvas.height * endPct;
+      } else {
+        minX = canvas.width * startPct;
+        maxX = canvas.width * endPct;
+      }
+
       if (style === 'dotted') {
-        // Define bounding boxes to keep loops fast and performant
-        let startX = 0, endX = canvas.width, startY = 0, endY = canvas.height;
-        if (side === 'left') endX = gWidth;
-        if (side === 'right') startX = canvas.width - gWidth;
-        if (side === 'top') endY = gHeight;
-        if (side === 'bottom') startY = canvas.height - gHeight;
+        let loopStartX = 0, loopEndX = canvas.width, loopStartY = 0, loopEndY = canvas.height;
+        if (side === 'left') loopEndX = gWidth;
+        if (side === 'right') loopStartX = canvas.width - gWidth;
+        if (side === 'top') loopEndY = gHeight;
+        if (side === 'bottom') loopStartY = canvas.height - gHeight;
 
-        for (let x = startX; x < endX; x += dotSpacing) {
-          for (let y = startY; y < endY; y += dotSpacing) {
-            let ratio = 0;
-            if (side === 'left') ratio = 1 - (x / gWidth);
-            if (side === 'right') ratio = 1 - ((canvas.width - x) / gWidth);
-            if (side === 'top') ratio = 1 - (y / gHeight);
-            if (side === 'bottom') ratio = 1 - ((canvas.height - y) / gHeight);
+        for (let x = loopStartX; x < loopEndX; x += dotSpacing) {
+          for (let y = loopStartY; y < loopEndY; y += dotSpacing) {
+            if (x >= minX && x <= maxX && y >= minY && y <= maxY) {
+              let ratio = 0;
+              if (side === 'left') ratio = 1 - (x / gWidth);
+              if (side === 'right') ratio = 1 - ((canvas.width - x) / gWidth);
+              if (side === 'top') ratio = 1 - (y / gHeight);
+              if (side === 'bottom') ratio = 1 - ((canvas.height - y) / gHeight);
 
-            if (ratio > 0) {
-              const radius = (dotSpacing / 2) * Math.pow(ratio, 1.2) * 1.3;
-              ctx.fillStyle = color;
-              ctx.beginPath();
-              ctx.arc(x + dotSpacing/2, y + dotSpacing/2, Math.max(0, radius), 0, Math.PI * 2);
-              ctx.fill();
+              if (ratio > 0) {
+                const radius = (dotSpacing / 2) * Math.pow(ratio, 1.2) * 1.3;
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(x + dotSpacing/2, y + dotSpacing/2, Math.max(0, radius), 0, Math.PI * 2);
+                ctx.fill();
+              }
             }
           }
         }
@@ -290,34 +385,43 @@
       
       else if (style === 'solid') {
         let grad;
+        ctx.save();
+        ctx.beginPath();
+        if (side === 'left') ctx.rect(0, minY, gWidth, maxY - minY);
+        if (side === 'right') ctx.rect(canvas.width - gWidth, minY, gWidth, maxY - minY);
+        if (side === 'top') ctx.rect(minX, 0, maxX - minX, gHeight);
+        if (side === 'bottom') ctx.rect(minX, canvas.height - gHeight, maxX - minX, gHeight);
+        ctx.clip();
+
         if (side === 'left') {
           grad = ctx.createLinearGradient(0, 0, gWidth, 0);
           grad.addColorStop(0, `rgba(${rgb}, 1)`);
           grad.addColorStop(1, `rgba(${rgb}, 0)`);
           ctx.fillStyle = grad;
-          ctx.fillRect(0, 0, gWidth, canvas.height);
+          ctx.fillRect(0, minY, gWidth, maxY - minY);
         }
         else if (side === 'right') {
           grad = ctx.createLinearGradient(canvas.width, 0, canvas.width - gWidth, 0);
           grad.addColorStop(0, `rgba(${rgb}, 1)`);
           grad.addColorStop(1, `rgba(${rgb}, 0)`);
           ctx.fillStyle = grad;
-          ctx.fillRect(canvas.width - gWidth, 0, gWidth, canvas.height);
+          ctx.fillRect(canvas.width - gWidth, minY, gWidth, maxY - minY);
         }
         else if (side === 'top') {
           grad = ctx.createLinearGradient(0, 0, 0, gHeight);
           grad.addColorStop(0, `rgba(${rgb}, 1)`);
           grad.addColorStop(1, `rgba(${rgb}, 0)`);
           ctx.fillStyle = grad;
-          ctx.fillRect(0, 0, canvas.width, gHeight);
+          ctx.fillRect(minX, 0, maxX - minX, gHeight);
         }
         else if (side === 'bottom') {
           grad = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - gHeight);
           grad.addColorStop(0, `rgba(${rgb}, 1)`);
           grad.addColorStop(1, `rgba(${rgb}, 0)`);
           ctx.fillStyle = grad;
-          ctx.fillRect(0, canvas.height - gHeight, canvas.width, gHeight);
+          ctx.fillRect(minX, canvas.height - gHeight, maxX - minX, gHeight);
         }
+        ctx.restore();
       } 
       
       else if (style === 'striped') {
@@ -325,34 +429,33 @@
           for (let x = 0; x < gWidth; x += lineWidth * 2) {
             const ratio = 1 - (x / gWidth);
             ctx.fillStyle = `rgba(${rgb}, ${ratio})`;
-            ctx.fillRect(x, 0, lineWidth, canvas.height);
+            ctx.fillRect(x, minY, lineWidth, maxY - minY);
           }
         }
         else if (side === 'right') {
           for (let x = canvas.width; x > canvas.width - gWidth; x -= lineWidth * 2) {
             const ratio = 1 - ((canvas.width - x) / gWidth);
             ctx.fillStyle = `rgba(${rgb}, ${ratio})`;
-            ctx.fillRect(x - lineWidth, 0, lineWidth, canvas.height);
+            ctx.fillRect(x - lineWidth, minY, lineWidth, maxY - minY);
           }
         }
         else if (side === 'top') {
           for (let y = 0; y < gHeight; y += lineWidth * 2) {
             const ratio = 1 - (y / gHeight);
             ctx.fillStyle = `rgba(${rgb}, ${ratio})`;
-            ctx.fillRect(0, y, canvas.width, lineWidth);
+            ctx.fillRect(minX, y, maxX - minX, lineWidth);
           }
         }
         else if (side === 'bottom') {
           for (let y = canvas.height; y > canvas.height - gHeight; y -= lineWidth * 2) {
             const ratio = 1 - ((canvas.height - y) / gHeight);
             ctx.fillStyle = `rgba(${rgb}, ${ratio})`;
-            ctx.fillRect(0, y - lineWidth, canvas.width, lineWidth);
+            ctx.fillRect(minX, y - lineWidth, maxX - minX, lineWidth);
           }
         }
       }
     }
 
-    // Main Draw Function
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -368,18 +471,22 @@
         ctx.fillText('Upload a background image to begin', canvas.width / 2, canvas.height / 2);
       }
 
-      // 2. Draw Active Gradients
+      // 2. Map Over Borders Configs
       const color = colorPicker.value;
       const rgb = hexToRgbStr(color);
-      const pct = parseInt(widthSlider.value) / 100;
       const style = stylePicker.value;
 
-      if (sideLeft.checked) drawSideGradient('left', style, color, rgb, pct);
-      if (sideRight.checked) drawSideGradient('right', style, color, rgb, pct);
-      if (sideTop.checked) drawSideGradient('top', style, color, rgb, pct);
-      if (sideBottom.checked) drawSideGradient('bottom', style, color, rgb, pct);
+      Object.keys(sides).forEach(sideKey => {
+        const side = sides[sideKey];
+        if (side.cb.checked) {
+          const thickPct = parseInt(side.thick.value) / 100;
+          const startPct = parseInt(side.start.value) / 100;
+          const endPct = parseInt(side.end.value) / 100;
+          drawSideGradient(sideKey, style, color, rgb, thickPct, startPct, endPct);
+        }
+      });
 
-      // 3. Draw Logo
+      // 3. Render Positioned Logo Asset
       if (logoImage) {
         const logoSize = parseInt(logoSizeSlider.value);
         const aspectRatio = logoImage.height / logoImage.width;
@@ -394,22 +501,19 @@
             ctx.lineWidth = 2;
             ctx.strokeRect(xPos, yPos, drawWidth, drawHeight);
         }
-
         ctx.drawImage(logoImage, xPos, yPos, drawWidth, drawHeight);
       }
     }
 
     function getMousePos(canvas, evt) {
         const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
         return {
-            x: (evt.clientX - rect.left) * scaleX,
-            y: (evt.clientY - rect.top) * scaleY
+            x: (evt.clientX - rect.left) * (canvas.width / rect.width),
+            y: (evt.clientY - rect.top) * (canvas.height / rect.height)
         };
     }
 
-    // Interaction Handlers
+    // Drag / Drop Handling Canvas Listeners
     canvas.addEventListener('mousedown', (e) => {
         if (!logoImage) return;
         isDragging = true;
@@ -474,13 +578,8 @@
       }
     });
 
-    // Real-time Event Listeners
     stylePicker.addEventListener('change', draw);
     colorPicker.addEventListener('input', draw);
-    widthSlider.addEventListener('input', (e) => {
-      widthValDisplay.textContent = `${e.target.value}%`;
-      draw();
-    });
     logoSizeSlider.addEventListener('input', (e) => {
       logoSizeValDisplay.textContent = `${e.target.value}px`;
       draw();
@@ -488,11 +587,24 @@
     logoXInput.addEventListener('input', draw);
     logoYInput.addEventListener('input', draw);
 
-    // Side Selection Listeners
-    sideLeft.addEventListener('change', draw);
-    sideRight.addEventListener('change', draw);
-    sideTop.addEventListener('change', draw);
-    sideBottom.addEventListener('change', draw);
+    // Dynamic Binding Loop for All Side Parameter Changes
+    Object.keys(sides).forEach(sideKey => {
+      const side = sides[sideKey];
+      side.cb.addEventListener('change', draw);
+      
+      side.thick.addEventListener('input', (e) => {
+        side.thickVal.textContent = `${e.target.value}%`;
+        draw();
+      });
+      side.start.addEventListener('input', (e) => {
+        side.startVal.textContent = `${e.target.value}%`;
+        draw();
+      });
+      side.end.addEventListener('input', (e) => {
+        side.endVal.textContent = `${e.target.value}%`;
+        draw();
+      });
+    });
 
     resetBtn.addEventListener('click', () => {
         logoXInput.value = DEFAULT_LOGO_POS;
